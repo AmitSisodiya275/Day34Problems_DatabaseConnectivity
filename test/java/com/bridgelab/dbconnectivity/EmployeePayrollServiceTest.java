@@ -7,6 +7,7 @@ import java.io.IOError;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -57,5 +58,12 @@ public class EmployeePayrollServiceTest {
 		List<EmployeePayroll> employeePayrollData = employeePayrollService
 				.getEmployeePayrollDataFromDateRange(IOService.DB_IO, startDate, endDate);
 		assertEquals(3, employeePayrollData.size());
+	}
+
+	@Test
+	public void givenPayrollData_whenAverageByGenderRetrieved_shouldReturnRightValue() {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		Map<String, Double> avgSalaryByGender = employeePayrollService.getAvgSalaryByGender(IOService.DB_IO);
+		assertTrue(avgSalaryByGender.get("M").equals(2000000.00) && avgSalaryByGender.get("F").equals(3000000.00));
 	}
 }

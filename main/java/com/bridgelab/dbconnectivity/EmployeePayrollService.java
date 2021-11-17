@@ -3,6 +3,7 @@ package com.bridgelab.dbconnectivity;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class EmployeePayrollService {
@@ -108,6 +109,13 @@ public class EmployeePayrollService {
 			LocalDate endDate) {
 		if(ioService == IOService.DB_IO) {
 			return employeePayrollDBIOService.getEmployeePayrollDataFromDateRange(startDate, endDate);
+		}
+		return null;
+	}
+
+	public Map<String, Double> getAvgSalaryByGender(IOService ioService) {
+		if(ioService == IOService.DB_IO) {
+			return employeePayrollDBIOService.getAvgSalaryByGender();
 		}
 		return null;
 	}
