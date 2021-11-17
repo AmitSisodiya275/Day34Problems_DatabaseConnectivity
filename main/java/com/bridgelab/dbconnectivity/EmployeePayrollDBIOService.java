@@ -1,6 +1,7 @@
 package com.bridgelab.dbconnectivity;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -42,21 +43,7 @@ public class EmployeePayrollDBIOService {
 
 	public List<EmployeePayroll> readData() throws ConnectivityIssueException {
 		String sql = "select * from employee_payroll;";
-		List<EmployeePayroll> payrollList = new ArrayList<>();
-
-		try {
-			Connection connection = this.getConnection();
-			Statement statement = connection.createStatement();
-			ResultSet resultSet = statement.executeQuery(sql);
-
-			payrollList = this.getEmployeePayrollData(resultSet);
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new ConnectivityIssueException("There is an Error with the SQL");
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		return payrollList;
+		return this.getEmployeePayrollDataUsingSql(sql);
 	}
 
 	public int updateEmployeeSalary(String name, double salary) {
@@ -113,6 +100,29 @@ public class EmployeePayrollDBIOService {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public List<EmployeePayroll> getEmployeePayrollDataFromDateRange(LocalDate startDate, LocalDate endDate) {
+		String sql = String.format("select * from employee_payroll where start_date between '%s' and '%s';",
+				Date.valueOf(startDate), Date.valueOf(endDate));
+		return this.getEmployeePayrollDataUsingSql(sql);
+	}
+
+	private List<EmployeePayroll> getEmployeePayrollDataUsingSql(String sql) {
+		List<EmployeePayroll> payrollList = new ArrayList<>();
+
+		try {
+			Connection connection = this.getConnection();
+			Statement statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery(sql);
+
+			payrollList = this.getEmployeePayrollData(resultSet);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return payrollList;
 	}
 
 }

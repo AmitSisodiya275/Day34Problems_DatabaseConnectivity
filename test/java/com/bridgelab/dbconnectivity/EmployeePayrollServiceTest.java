@@ -3,6 +3,8 @@ package com.bridgelab.dbconnectivity;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOError;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -45,5 +47,15 @@ public class EmployeePayrollServiceTest {
 		employeePayrollService.updateEmployeeSalary("Terissa", 3000000.0);
 		boolean result = employeePayrollService.checkPayrollObjectDataIsSyncWithDB("Terissa");
 		assertTrue(result);
+	}
+
+	@Test
+	public void givenDateRange_whenFetched_shouldReturnEmployeeWithinThatRange() {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		LocalDate startDate = LocalDate.of(2018, 1, 1);
+		LocalDate endDate = LocalDate.now();
+		List<EmployeePayroll> employeePayrollData = employeePayrollService
+				.getEmployeePayrollDataFromDateRange(IOService.DB_IO, startDate, endDate);
+		assertEquals(3, employeePayrollData.size());
 	}
 }

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class EmployeePayrollService {
-	
+
 	private EmployeePayrollDBIOService employeePayrollDBIOService;
 
 	public enum IOService {
@@ -99,8 +99,17 @@ public class EmployeePayrollService {
 	}
 
 	public boolean checkPayrollObjectDataIsSyncWithDB(String name) {
-		List<EmployeePayroll> employeePayrollDataList = EmployeePayrollDBIOService.getInstance().getEmployeePayrollData(name);
+		List<EmployeePayroll> employeePayrollDataList = EmployeePayrollDBIOService.getInstance()
+				.getEmployeePayrollData(name);
 		return employeePayrollDataList.get(0).equals(getEmployeePayrollData(name));
+	}
+
+	public List<EmployeePayroll> getEmployeePayrollDataFromDateRange(IOService ioService, LocalDate startDate,
+			LocalDate endDate) {
+		if(ioService == IOService.DB_IO) {
+			return employeePayrollDBIOService.getEmployeePayrollDataFromDateRange(startDate, endDate);
+		}
+		return null;
 	}
 
 }
