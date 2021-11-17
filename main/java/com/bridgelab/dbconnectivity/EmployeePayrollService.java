@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Scanner;
 
 public class EmployeePayrollService {
+	
+	private EmployeePayrollDBIOService employeePayrollDBIOService;
 
 	public enum IOService {
 		CONSOLE_IO, FILE_IO, DB_IO, REST_IO
@@ -15,9 +17,11 @@ public class EmployeePayrollService {
 	List<EmployeePayroll> employeePayrollList = new ArrayList<>();
 
 	public EmployeePayrollService() {
+		employeePayrollDBIOService = EmployeePayrollDBIOService.getInstance();
 	}
 
 	public EmployeePayrollService(List<EmployeePayroll> employeePayrollList) {
+		this();
 		this.employeePayrollList = employeePayrollList;
 	}
 
@@ -71,12 +75,32 @@ public class EmployeePayrollService {
 	public List<EmployeePayroll> readEmployeePayrollData(IOService ioService) {
 		if (ioService.equals(IOService.DB_IO)) {
 			try {
-				this.employeePayrollList = new EmployeePayrollDBIOService().readData();
+				this.employeePayrollList = employeePayrollDBIOService.readData();
 			} catch (ConnectivityIssueException e) {
 				e.printStackTrace();
 			}
 		}
 		return this.employeePayrollList;
+	}
+
+	public void updateEmployeeSalary(String name, double salary) {
+		int result = employeePayrollDBIOService.updateEmployeeSalary(name, salary);
+		if (result == 0) {
+			return;
+		}
+		EmployeePayroll employeePayrollData = this.getEmployeePayrollData(name);
+		if (employeePayrollData != null) {
+			employeePayrollData.salary = salary;
+		}
+	}
+
+	private EmployeePayroll getEmployeePayrollData(String name) {
+		return this.employeePayrollList.stream().filter(data -> data.name.equals(name)).findFirst().orElse(null);
+	}
+
+	public boolean checkPayrollObjectDataIsSyncWithDB(String name) {
+		List<EmployeePayroll> employeePayrollDataList = EmployeePayrollDBIOService.getInstance().getEmployeePayrollData(name);
+		return employeePayrollDataList.get(0).equals(getEmployeePayrollData(name));
 	}
 
 }

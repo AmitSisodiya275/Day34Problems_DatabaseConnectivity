@@ -1,8 +1,8 @@
 package com.bridgelab.dbconnectivity;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,8 +15,7 @@ public class EmployeePayrollServiceTest {
 	@Test
 	public void given3EmployeeDetailsWhenWrittenToTheFileShouldMatchTheEntries() {
 		EmployeePayroll[] arrayOfEmpData = { new EmployeePayroll(1, "amit", 5000),
-				new EmployeePayroll(2, "Sunanda", 30000),
-				new EmployeePayroll(3, "Gayatri", 40000) };
+				new EmployeePayroll(2, "Sunanda", 30000), new EmployeePayroll(3, "Gayatri", 40000) };
 
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService(Arrays.asList(arrayOfEmpData));
 		employeePayrollService.writeEmployeePayrollData(IOService.FILE_IO);
@@ -27,15 +26,24 @@ public class EmployeePayrollServiceTest {
 
 	@Test
 	public void givenFileWhenReadingShouldMatchTheEmployeeCount() {
-		EmployeePayrollService payrollService = new EmployeePayrollService();
-		long entries = payrollService.readData(IOService.FILE_IO);
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		long entries = employeePayrollService.readData(IOService.FILE_IO);
 		assertEquals(3, entries);
 	}
 
 	@Test
 	public void givenEmployeePayrollInDB_WhenRetrieved_ShouldMatchTheCount() {
-		EmployeePayrollService service = new EmployeePayrollService();
-		List<EmployeePayroll> payrollList = service.readEmployeePayrollData(IOService.DB_IO);
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		List<EmployeePayroll> payrollList = employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
 		assertEquals(3, payrollList.size());
+	}
+
+	@Test
+	public void givenNewSalary_WhenUpdated_ShouldSyncWithDB() {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		List<EmployeePayroll> employeePayrollData = employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+		employeePayrollService.updateEmployeeSalary("Terissa", 3000000.0);
+		boolean result = employeePayrollService.checkPayrollObjectDataIsSyncWithDB("Terissa");
+		assertTrue(result);
 	}
 }
